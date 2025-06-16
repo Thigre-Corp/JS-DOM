@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+    <div id="board"></div>
+    <script>
+        function shuffleChildren(parent){ // fonction mélange des cartes
+            let children = parent.children;
+            let i=children.length, k, temp;
+            while(--i >0){
+                k = Math.floor(Math.random() *(i+1));
+                temp = children[k]
+                children[k] = children[i];
+                parent.appendChild(temp);
+            }
+        }
+
+        function showReaction(type, clickedBox){ // fonction modification des boite en fonction de la validité du click
+            clickedBox.classList.add(type);
+            if (type !== "success"){
+                setTimeout(function(){
+                    clickedBox.classList.remove(type);
+                }, 800)
+            }
+        }
+
+
+        const box = document.createElement("div"); // création première boite
+        box.classList.add("box"); // ajout class 'box'
+
+        const board = document.querySelector("#board"); // récupère le div avec id # board
+
+        let nb =1; // compteur denombre de click
+
+        for(let i=1; i<=10; i++){ 
+            let newBox = box.cloneNode(); // cloner la première box x fois
+            newBox.innerText = i; // y mettre le numéro
+            board.appendChild(newBox); // l'afficher
+
+            newBox.addEventListener('click', function(){ // observateur 'click'
+
+                if(i == nb ){ // si tout est bon
+                    newBox.classList.add('box-valid'); // grisé la boite selectionnée
+                    if(nb == board.children.length){
+                        board.querySelectorAll('.box').forEach(function(box){
+                            showReaction("success", box);
+                        })
+                        
+                    }
+                    nb++;    //incrémenté le nombre de click
+                }         
+                else if(i > nb){ //si mauvaise boite
+                    showReaction("error", newBox); // afficher l'alerte 
+                    nb =1 ; // réinitialiser nb
+                    //en cours
+                    board.querySelectorAll('.box-valid').forEach(function(validBox){
+                        validBox.classList.remove('box-valid');
+                    })
+                }    
+                else{ // en cas de click sur une case déjà validée
+                    showReaction("notice", newBox); // afficher l'alerte 
+                }   
+            })
+        }
+
+        shuffleChildren(board); // appel à la fonction de mélande des cartes
+
+    </script>
+</body>
+</html>
